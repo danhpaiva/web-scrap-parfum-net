@@ -64,7 +64,7 @@ Gerencie os itens monitorados através do arquivo JSON na raiz do projeto:
     "PrecoBase": 169.90
   }
 ]
-
+```
 
 ## 📄 Licença
 
