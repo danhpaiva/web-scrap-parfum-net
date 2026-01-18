@@ -2,11 +2,12 @@
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
+using WebScrapParfum.Interface;
 using WebScrapParfum.Models;
 
 namespace WebScrapParfum.Services;
 
-public class GranadoScraper : IDisposable
+public class GranadoScraper : IDisposable, IScraper
 {
     private readonly IWebDriver _driver;
     private readonly WebDriverWait _wait;

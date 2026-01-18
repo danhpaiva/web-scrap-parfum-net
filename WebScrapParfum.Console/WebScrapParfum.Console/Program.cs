@@ -1,4 +1,5 @@
 ﻿using System.Text.Json;
+using WebScrapParfum.Interface;
 using WebScrapParfum.Models;
 using WebScrapParfum.Services;
 
@@ -15,27 +16,52 @@ if (!File.Exists(jsonPath))
 var jsonContent = File.ReadAllText(jsonPath);
 var listaPerfumes = JsonSerializer.Deserialize<List<PerfumeConfig>>(jsonContent);
 
-using var scraper = new GranadoScraper();
+if (listaPerfumes == null) return;
 
 foreach (var perfume in listaPerfumes)
 {
     Console.WriteLine($"[LOG] Verificando: {perfume.Nome}...");
 
-    var resultado = scraper.Monitorar(perfume);
-
-    Console.WriteLine($"[LOG] Preço encontrado: {resultado.PrecoAtual:C} (Base: {perfume.PrecoBase:C})");
-
-    if (resultado.TemDesconto)
+    try
     {
-        Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine($"!!! PROMOÇÃO DETECTADA !!!");
-        Console.WriteLine($"Perfume: {resultado.Info.Nome}");
-        Console.WriteLine($"Desconto de: {resultado.ValorDesconto:C}");
+        // Obtemos o scraper correto para o domínio atual
+        using IScraper scraper = GetScraper(perfume.Url);
+
+        var resultado = scraper.Monitorar(perfume);
+
+        Console.WriteLine($"[LOG] Preço encontrado: {resultado.PrecoAtual:C} (Base: {perfume.PrecoBase:C})");
+
+        if (resultado.TemDesconto)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine($"!!! PROMOÇÃO DETECTADA !!!");
+            Console.WriteLine($"Perfume: {resultado.Info.Nome}");
+            Console.WriteLine($"Desconto de: {resultado.ValorDesconto:C}");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.WriteLine($"[INFO] Sem desconto relevante para {perfume.Nome}.");
+        }
+    }
+    catch (Exception ex)
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"[AVISO] Não foi possível processar {perfume.Nome}: {ex.Message}");
         Console.ResetColor();
     }
-    else
-    {
-        Console.WriteLine($"[INFO] Sem desconto relevante para {perfume.Nome}.");
-    }
+
     Console.WriteLine(new string('-', 30));
+}
+
+// Fábrica (Factory Method) para decidir qual estratégia de scraping usar
+static IScraper GetScraper(string url)
+{
+    if (url.Contains("granado.com.br"))
+        return new GranadoScraper();
+
+    if (url.Contains("nuancielo.com.br"))
+        return new NuancieloScraper();
+
+    throw new Exception("Domínio não suportado pelo sistema de scraping.");
 }
