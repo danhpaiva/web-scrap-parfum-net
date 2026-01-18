@@ -64,3 +64,19 @@ Gerencie os itens monitorados através do arquivo JSON na raiz do projeto:
     "PrecoBase": 169.90
   }
 ]
+
+
+## 📄 Licença
+
+Este projeto está licenciado sob a licença MIT.
+
+🔗 https://github.com/danhpaiva/web-scrap-parfum-net/blob/main/LICENSE
+
+---
+
+## 👨‍💻 Autor
+
+**Daniel Paiva**  
+Desenvolvedor .NET
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/danhpaiva/)
