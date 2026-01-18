@@ -63,5 +63,8 @@ static IScraper GetScraper(string url)
     if (url.Contains("nuancielo.com.br"))
         return new NuancieloScraper();
 
+    if (url.Contains("intheboxperfumes.com.br"))
+        return new InTheBoxScraper();
+
     throw new Exception("Domínio não suportado pelo sistema de scraping.");
 }
