@@ -26,35 +26,22 @@ public class GranadoScraper : IDisposable
 
     public ScrapedResult Monitorar(PerfumeConfig config)
     {
-        try
-        {
-            _driver.Navigate().GoToUrl(config.Url);
+        _driver.Navigate().GoToUrl(config.Url);
 
-            var element = _wait.Until(d => {
-                var el = d.FindElement(By.XPath("//span[contains(text(), 'R$')]"));
-                return (el.Displayed && !string.IsNullOrEmpty(el.Text)) ? el : null;
-            });
+        // Seletor mais abrangente para pegar o span de preço pelo valor monetário
+        var element = _wait.Until(d => {
+            // Tenta encontrar o span que contém "R$" ou o atributo de preço
+            var el = d.FindElement(By.XPath("//span[contains(., 'R$')]"));
+            return (el.Displayed) ? el : null;
+        });
 
-            decimal precoCalculado = ParsePrice(element.Text);
-            return new ScrapedResult(config, precoCalculado);
-        }
-        catch (WebDriverTimeoutException)
-        {
-            throw new Exception($"Erro: O preço do perfume '{config.Nome}' não foi encontrado na página. Verifique se a URL está correta ou se o site mudou o layout.");
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Erro ao processar o perfume {config.Nome}: {ex.Message}");
-        }
+        decimal precoCalculado = ParsePrice(element.Text);
+        return new ScrapedResult(config, precoCalculado);
     }
 
     private decimal ParsePrice(string text)
     {
-        string valorLimpo = text
-            .Replace("R$", "")
-            .Replace("\u00A0", "")
-            .Replace(" ", "")
-            .Trim();
+        string valorLimpo = new string(text.Where(c => char.IsDigit(c) || c == ',').ToArray());
 
         return decimal.Parse(valorLimpo, new CultureInfo("pt-BR"));
     }
