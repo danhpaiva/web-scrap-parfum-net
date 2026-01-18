@@ -28,13 +28,34 @@ public class InTheBoxScraper : IScraper
     {
         _driver.Navigate().GoToUrl(config.Url);
 
-        var element = _wait.Until(d => {
-            var el = d.FindElement(By.CssSelector("span.cmp-price-price"));
-            return (el.Displayed && el.Text.Contains("R$")) ? el : null;
-        });
+        // 1. Verificação de estoque (Check de Disponibilidade)
+        // Na In The Box, geralmente aparece um botão "Avise-me" ou classe 'unavailable'
+        var esgotado = _driver.FindElements(By.CssSelector(".p-unavailable, .notify-me, [value='Avise-me']")).Any(e => e.Displayed);
 
-        decimal precoCalculado = ParsePrice(element.Text);
-        return new ScrapedResult(config, precoCalculado);
+        if (esgotado)
+        {
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine($"[AVISO] {config.Nome} está esgotado no momento.");
+            Console.ResetColor();
+
+            // Retornamos o preço base para não disparar alerta de promoção (ou 0 se preferir)
+            return new ScrapedResult(config, config.PrecoBase);
+        }
+
+        try
+        {
+            var element = _wait.Until(d => {
+                var el = d.FindElement(By.CssSelector("span.cmp-price-price"));
+                return (el.Displayed && el.Text.Contains("R$")) ? el : null;
+            });
+
+            decimal precoCalculado = ParsePrice(element.Text);
+            return new ScrapedResult(config, precoCalculado);
+        }
+        catch (WebDriverTimeoutException)
+        {
+            throw new Exception("Elemento de preço não encontrado (o site pode ter mudado o layout).");
+        }
     }
 
     private decimal ParsePrice(string text)
