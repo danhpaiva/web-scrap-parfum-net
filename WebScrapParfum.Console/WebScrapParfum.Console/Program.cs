@@ -52,21 +52,6 @@ foreach (var perfume in listaPerfumes)
                 Console.WriteLine($"[INFO] Sem desconto relevante para {perfume.Nome}.");
             }
         }
-
-        Console.WriteLine($"[LOG] Preço encontrado: {resultado.PrecoAtual:C} (Base: {perfume.PrecoBase:C})");
-
-        if (resultado.TemDesconto)
-        {
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine($"!!! PROMOÇÃO DETECTADA !!!");
-            Console.WriteLine($"Perfume: {resultado.Info.Nome}");
-            Console.WriteLine($"Desconto de: {resultado.ValorDesconto:C}");
-            Console.ResetColor();
-        }
-        else
-        {
-            Console.WriteLine($"[INFO] Sem desconto relevante para {perfume.Nome}.");
-        }
     }
     catch (Exception ex)
     {

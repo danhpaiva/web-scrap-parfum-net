@@ -22,7 +22,7 @@ public class NuancieloScraper : IScraper
         options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
         _driver = new ChromeDriver(options);
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(25));
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(7));
     }
 
     public ScrapedResult Monitorar(PerfumeConfig config)
