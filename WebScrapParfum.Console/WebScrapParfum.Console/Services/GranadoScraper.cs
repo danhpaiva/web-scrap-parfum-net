@@ -22,7 +22,7 @@ public class GranadoScraper : IDisposable, IScraper
         options.AddArgument("--disable-dev-shm-usage");
 
         _driver = new ChromeDriver(options);
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(10));
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5));
     }
 
     public ScrapedResult Monitorar(PerfumeConfig config)

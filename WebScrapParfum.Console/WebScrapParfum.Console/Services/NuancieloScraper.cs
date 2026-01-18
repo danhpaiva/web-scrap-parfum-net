@@ -22,33 +22,37 @@ public class NuancieloScraper : IScraper
         options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
 
         _driver = new ChromeDriver(options);
-        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(5)); // Aumentamos para sites mais lentos
+        _wait = new WebDriverWait(_driver, TimeSpan.FromSeconds(25));
     }
 
     public ScrapedResult Monitorar(PerfumeConfig config)
     {
         _driver.Navigate().GoToUrl(config.Url);
 
-        string cssSelector = "#form-add-cart .product-action-price.final .total";
+        // Força um scroll para garantir que os scripts de "lazy load" de preço sejam disparados
+        IJavaScriptExecutor js = (IJavaScriptExecutor)_driver;
+        js.ExecuteScript("window.scrollTo(0, 500);");
+
+        string cssSelector = "span.total";
 
         var element = _wait.Until(d => {
             try
             {
-                var el = d.FindElement(By.CssSelector(cssSelector));
+                // Buscamos todos os elementos com essa classe
+                var elements = d.FindElements(By.CssSelector(cssSelector));
 
-                // SÊNIOR TIP: Não basta o elemento existir, ele precisa ter o texto "R$" 
-                // porque o AJAX pode carregar o span vazio antes de preencher o preço.
-                if (el.Displayed && el.Text.Contains("R$"))
-                {
-                    return el;
-                }
-                return null;
+                // Procuramos o que pertence ao formulário de compra e tem texto
+                var el = elements.FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+
+                return el;
             }
             catch (NoSuchElementException)
             {
                 return null;
             }
         });
+
+        if (element == null) throw new Exception("Preço não encontrado após o tempo limite.");
 
         decimal precoCalculado = ParsePrice(element.Text);
         return new ScrapedResult(config, precoCalculado);
