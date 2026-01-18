@@ -9,7 +9,7 @@ if (!File.Exists(jsonPath))
     Console.ForegroundColor = ConsoleColor.Red;
     Console.WriteLine($"Erro fatal: Arquivo de configuração não encontrado em: {jsonPath}");
     Console.ResetColor();
-    return; // Encerra o programa graciosamente
+    return;
 }
 
 var jsonContent = File.ReadAllText(jsonPath);
