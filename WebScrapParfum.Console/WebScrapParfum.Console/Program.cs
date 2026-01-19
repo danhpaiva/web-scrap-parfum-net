@@ -66,14 +66,17 @@ foreach (var perfume in listaPerfumes)
 // Fábrica (Factory Method) para decidir qual estratégia de scraping usar
 static IScraper GetScraper(string url)
 {
-    if (url.Contains("granado.com.br"))
-        return new GranadoScraper();
+    if (url.Contains("granado.com.br")) return new GranadoScraper();
 
-    if (url.Contains("nuancielo.com.br"))
-        return new NuancieloScraper();
+    if (url.Contains("nuancielo.com.br")) return new NuancieloScraper();
 
-    if (url.Contains("intheboxperfumes.com.br"))
-        return new InTheBoxScraper();
+    if (url.Contains("intheboxperfumes.com.br")) return new InTheBoxScraper();
+
+    if (url.Contains("natura.com.br")) return new NaturaScraper();
+
+    if (url.Contains("avatim.com.br")) return new AvatimScraper();
+
+    if (url.Contains("amazon.com.br")) return new AmazonScraper();
 
     throw new Exception("Domínio não suportado pelo sistema de scraping.");
 }
