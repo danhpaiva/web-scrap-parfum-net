@@ -76,5 +76,7 @@ static IScraper GetScraper(string url)
 
     if (url.Contains("avatim.com.br")) return new AvatimScraper();
 
+    if (url.Contains("amazon.com.br")) return new AmazonScraper();
+
     throw new Exception("Domínio não suportado pelo sistema de scraping.");
 }
