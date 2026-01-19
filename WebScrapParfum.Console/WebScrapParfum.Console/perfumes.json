@@ -28,5 +28,25 @@
     "Nome": "Udv for Men",
     "Url": "https://www.amazon.com.br/Udv-Edi%C3%A7%C3%A3o-Vap-Ulric-Varens/dp/B000GIJ1XS",
     "PrecoBase": 109.00
+  },
+  {
+    "Nome": "Nautica Voyage 100ml",
+    "Url": "https://www.amazon.com.br/Nautica-Toilette-Spray-Voyage-homens/dp/B01I54ITP0",
+    "PrecoBase": 107.00
+  },
+  {
+    "Nome": "Nautica Voyage 200ml",
+    "Url": "https://www.amazon.com.br/Nautica-99350072072-NAUTICA-VOYAGE-por/dp/B08F3W312Q",
+    "PrecoBase": 199.00
+  },
+  {
+    "Nome": "PHEBO - Deo Colônia Limão Siciliano 200ml",
+    "Url": "https://www.amazon.com.br/Col%C3%B4nia-Lim%C3%A3o-Siciliano-PHEBO-Amarelo/dp/B00TEC00LE/",
+    "PrecoBase": 70.00
+  },
+  {
+    "Nome": "Phebo Deo Colônia, Coco da Bahia, 200ml",
+    "Url": "https://www.amazon.com.br/Phebo-Col%C3%B4nia-Coco-Bahia-200ml/dp/B0DKK3T4D4/",
+    "PrecoBase": 98.00
   }
 ]
