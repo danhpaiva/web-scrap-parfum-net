@@ -32,8 +32,9 @@ public class NaturaScraper : IScraper
         try
         {
             var element = _wait.Until(d => {
-                var el = d.FindElement(By.Id("product-price"));
-                return (el.Displayed && el.Text.Contains("R$")) ? el : null;
+                var el = d.FindElements(By.CssSelector("[data-testid='price-value'], #product-price"))
+                          .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+                return el;
             });
 
             decimal precoCalculado = ParsePrice(element.Text);
@@ -51,10 +52,17 @@ public class NaturaScraper : IScraper
 
     private decimal ParsePrice(string text)
     {
-        // Remove espaços inquebráveis (&nbsp;) e limpa o valor
-        string valorLimpo = text.Replace("\u00A0", " ");
-        valorLimpo = new string(valorLimpo.Where(c => char.IsDigit(c) || c == ',').ToArray());
-        return decimal.Parse(valorLimpo, new CultureInfo("pt-BR"));
+        string textoLimpo = text.Replace("\u00A0", " ").Trim();
+
+        var match = System
+            .Text
+            .RegularExpressions
+            .Regex.Match(textoLimpo, @"\d+,\d{2}");
+
+        if (match.Success)
+            return decimal.Parse(match.Value, new CultureInfo("pt-BR"));
+
+        throw new FormatException($"Não foi possível isolar o preço no texto: {text}");
     }
 
     public void Dispose()
