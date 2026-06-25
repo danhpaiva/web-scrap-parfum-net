@@ -1,17 +1,18 @@
-﻿using WebScrapParfum.Infrastructure.Factories;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
+using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class ZaraScraper : ScraperBase
 {
-    public ZaraScraper()
-        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(20)) { }
+    public ZaraScraper(ILogger<ZaraScraper> logger)
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(20), logger) { }
 
-    public override ScrapedResult Monitorar(PerfumeConfig config)
+    protected override ScrapedResult Execute(PerfumeConfig config)
     {
         _driver.Navigate().GoToUrl(config.Url);
 

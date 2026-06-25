@@ -1,17 +1,18 @@
-﻿using WebScrapParfum.Infrastructure.Factories;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
+using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class MahoganyScraper : ScraperBase
 {
-    public MahoganyScraper()
-        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15)) { }
+    public MahoganyScraper(ILogger<MahoganyScraper> logger)
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15), logger) { }
 
-    public override ScrapedResult Monitorar(PerfumeConfig config)
+    protected override ScrapedResult Execute(PerfumeConfig config)
     {
         _driver.Navigate().GoToUrl(config.Url);
 
@@ -34,7 +35,7 @@ public class MahoganyScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
-                            _driver.PageSource.Contains("IndisponÃ­vel") ||
+                            _driver.PageSource.Contains("Indisponível") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);

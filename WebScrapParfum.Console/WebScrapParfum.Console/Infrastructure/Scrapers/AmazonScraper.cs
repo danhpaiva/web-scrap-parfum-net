@@ -1,16 +1,17 @@
-﻿using WebScrapParfum.Infrastructure.Factories;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
+using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class AmazonScraper : ScraperBase
 {
-    public AmazonScraper()
-        : base(new DriverSettings(), TimeSpan.FromSeconds(20)) { }
+    public AmazonScraper(ILogger<AmazonScraper> logger)
+        : base(new DriverSettings(), TimeSpan.FromSeconds(20), logger) { }
 
-    public override ScrapedResult Monitorar(PerfumeConfig config)
+    protected override ScrapedResult Execute(PerfumeConfig config)
     {
         _driver.Navigate().GoToUrl(config.Url);
 

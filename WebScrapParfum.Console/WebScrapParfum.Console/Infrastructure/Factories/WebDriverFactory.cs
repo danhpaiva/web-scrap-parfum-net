@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Chromium;
@@ -11,51 +12,67 @@ public static class WebDriverFactory
     private const string UserAgent =
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36";
 
-    public static IWebDriver Create(DriverSettings settings)
+    public static IWebDriver Create(DriverSettings settings, ILogger? logger = null)
     {
-        return TryChrome(settings)
-            ?? TryEdge(settings)
-            ?? TryFirefox(settings)
+        return TryChrome(settings, logger)
+            ?? TryEdge(settings, logger)
+            ?? TryFirefox(settings, logger)
             ?? throw new InvalidOperationException(
                 "Nenhum navegador compatível encontrado. Instale Chrome, Edge ou Firefox.");
     }
 
-    private static IWebDriver? TryChrome(DriverSettings settings)
+    private static IWebDriver? TryChrome(DriverSettings settings, ILogger? logger)
     {
         try
         {
             var options = new ChromeOptions();
             ApplyChromiumArgs(options, settings);
-            return new ChromeDriver(options);
+            var driver = new ChromeDriver(options);
+            logger?.LogInformation("Navegador selecionado: Chrome");
+            return driver;
         }
-        catch { return null; }
+        catch (Exception ex)
+        {
+            logger?.LogWarning("Chrome indisponível ({Message}). Tentando Edge...", ex.Message);
+            return null;
+        }
     }
 
-    private static IWebDriver? TryEdge(DriverSettings settings)
+    private static IWebDriver? TryEdge(DriverSettings settings, ILogger? logger)
     {
         try
         {
             var options = new EdgeOptions();
             ApplyChromiumArgs(options, settings);
-            return new EdgeDriver(options);
+            var driver = new EdgeDriver(options);
+            logger?.LogInformation("Navegador selecionado: Edge");
+            return driver;
         }
-        catch { return null; }
+        catch (Exception ex)
+        {
+            logger?.LogWarning("Edge indisponível ({Message}). Tentando Firefox...", ex.Message);
+            return null;
+        }
     }
 
-    private static IWebDriver? TryFirefox(DriverSettings settings)
+    private static IWebDriver? TryFirefox(DriverSettings settings, ILogger? logger)
     {
         try
         {
             var options = new FirefoxOptions();
             options.AddArgument("--headless");
-
             if (settings.AddUserAgent)
                 options.SetPreference("general.useragent.override", UserAgent);
 
-            // Firefox não suporta os flags de automação do Chromium — ignorados intencionalmente
-            return new FirefoxDriver(options);
+            var driver = new FirefoxDriver(options);
+            logger?.LogInformation("Navegador selecionado: Firefox");
+            return driver;
         }
-        catch { return null; }
+        catch (Exception ex)
+        {
+            logger?.LogWarning("Firefox indisponível ({Message}).", ex.Message);
+            return null;
+        }
     }
 
     private static void ApplyChromiumArgs(ChromiumOptions options, DriverSettings settings)
