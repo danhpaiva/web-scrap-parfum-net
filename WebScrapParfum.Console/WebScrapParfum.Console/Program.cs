@@ -92,6 +92,7 @@ static IScraper GetScraper(string url)
     if (host.Contains("boticario.com.br"))         return new BoticarioScraper();
     if (host.Contains("mahogany.com.br"))          return new MahoganyScraper();
     if (host.Contains("maisonviegas.com.br"))      return new MaisonViegasScraper();
+    if (host.Contains("mercadolivre.com.br"))      return new MercadoLivreScraper();
 
     throw new NotSupportedException($"Domínio não suportado: {host}");
 }
