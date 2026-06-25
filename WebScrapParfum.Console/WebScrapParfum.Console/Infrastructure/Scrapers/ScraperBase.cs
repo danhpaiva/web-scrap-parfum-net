@@ -1,11 +1,11 @@
 using OpenQA.Selenium;
-using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using WebScrapParfum.Application.Interfaces;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
+using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
@@ -15,33 +15,13 @@ public abstract class ScraperBase : IScraper
     protected readonly WebDriverWait _wait;
     private bool _disposed;
 
-    protected ScraperBase(ChromeOptions options, TimeSpan waitTimeout)
+    protected ScraperBase(DriverSettings settings, TimeSpan waitTimeout)
     {
-        _driver = new ChromeDriver(options);
+        _driver = WebDriverFactory.Create(settings);
         _wait = new WebDriverWait(_driver, waitTimeout);
     }
 
     public abstract ScrapedResult Monitorar(PerfumeConfig config);
-
-    protected static ChromeOptions CreateBaseOptions(
-        bool addUserAgent = true,
-        bool disableBlinkAutomation = false,
-        bool excludeEnableAutomation = false)
-    {
-        var options = new ChromeOptions();
-        options.AddArguments("--headless", "--no-sandbox", "--disable-dev-shm-usage");
-
-        if (addUserAgent)
-            options.AddArgument("--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36");
-
-        if (disableBlinkAutomation)
-            options.AddArgument("--disable-blink-features=AutomationControlled");
-
-        if (excludeEnableAutomation)
-            options.AddExcludedArgument("enable-automation");
-
-        return options;
-    }
 
     protected static decimal ParsePrice(string text)
     {

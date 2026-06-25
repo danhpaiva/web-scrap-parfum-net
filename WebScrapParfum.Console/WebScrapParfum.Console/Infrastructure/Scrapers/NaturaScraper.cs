@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
@@ -8,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class NaturaScraper : ScraperBase
 {
     public NaturaScraper()
-        : base(CreateBaseOptions(disableBlinkAutomation: true), TimeSpan.FromSeconds(20)) { }
+        : base(new DriverSettings(DisableBlinkAutomation: true), TimeSpan.FromSeconds(20)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -27,7 +28,7 @@ public class NaturaScraper : ScraperBase
         }
         catch (WebDriverTimeoutException)
         {
-            bool esgotado = _driver.PageSource.Contains("Produto indisponível") ||
+            bool esgotado = _driver.PageSource.Contains("Produto indisponÃ­vel") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);

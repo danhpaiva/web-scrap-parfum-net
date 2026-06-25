@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
@@ -8,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class AvatimScraper : ScraperBase
 {
     public AvatimScraper()
-        : base(CreateBaseOptions(), TimeSpan.FromSeconds(15)) { }
+        : base(new DriverSettings(), TimeSpan.FromSeconds(15)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {

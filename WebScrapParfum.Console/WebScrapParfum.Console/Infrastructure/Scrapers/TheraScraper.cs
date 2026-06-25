@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
@@ -8,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class TheraScraper : ScraperBase
 {
     public TheraScraper()
-        : base(CreateBaseOptions(), TimeSpan.FromSeconds(10)) { }
+        : base(new DriverSettings(), TimeSpan.FromSeconds(10)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -32,7 +33,7 @@ public class TheraScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
-                            _driver.PageSource.Contains("Indisponível") ||
+                            _driver.PageSource.Contains("IndisponÃ­vel") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);

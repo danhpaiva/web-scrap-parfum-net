@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
@@ -8,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class MahoganyScraper : ScraperBase
 {
     public MahoganyScraper()
-        : base(CreateBaseOptions(disableBlinkAutomation: true, excludeEnableAutomation: true), TimeSpan.FromSeconds(15)) { }
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -33,7 +34,7 @@ public class MahoganyScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
-                            _driver.PageSource.Contains("Indisponível") ||
+                            _driver.PageSource.Contains("IndisponÃ­vel") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);

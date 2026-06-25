@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
@@ -7,7 +8,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class NuancieloScraper : ScraperBase
 {
     public NuancieloScraper()
-        : base(CreateBaseOptions(disableBlinkAutomation: true, excludeEnableAutomation: true), TimeSpan.FromSeconds(7)) { }
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(7)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -22,7 +23,7 @@ public class NuancieloScraper : ScraperBase
         });
 
         if (element == null)
-            throw new InvalidOperationException("Preço não encontrado após o tempo limite.");
+            throw new InvalidOperationException("PreÃ§o nÃ£o encontrado apÃ³s o tempo limite.");
 
         return new ScrapedResult(config, ParsePrice(element.Text));
     }

@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
@@ -7,7 +8,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class AmazonScraper : ScraperBase
 {
     public AmazonScraper()
-        : base(CreateBaseOptions(), TimeSpan.FromSeconds(20)) { }
+        : base(new DriverSettings(), TimeSpan.FromSeconds(20)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {

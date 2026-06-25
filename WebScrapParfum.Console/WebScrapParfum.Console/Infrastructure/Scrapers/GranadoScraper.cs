@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
@@ -7,7 +8,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class GranadoScraper : ScraperBase
 {
     public GranadoScraper()
-        : base(CreateBaseOptions(addUserAgent: false), TimeSpan.FromSeconds(5)) { }
+        : base(new DriverSettings(AddUserAgent: false), TimeSpan.FromSeconds(5)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {

@@ -1,3 +1,4 @@
+﻿using WebScrapParfum.Infrastructure.Factories;
 using OpenQA.Selenium;
 using System.Globalization;
 using WebScrapParfum.Domain.Entities;
@@ -8,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class InTheBoxScraper : ScraperBase
 {
     public InTheBoxScraper()
-        : base(CreateBaseOptions(excludeEnableAutomation: true), TimeSpan.FromSeconds(5)) { }
+        : base(new DriverSettings(ExcludeEnableAutomation: true), TimeSpan.FromSeconds(5)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -40,7 +41,7 @@ public class InTheBoxScraper : ScraperBase
             if (esgotado)
                 return new ScrapedResult(config, 0, false);
 
-            throw new InvalidOperationException("Não foi possível capturar o preço ou o estado do estoque.");
+            throw new InvalidOperationException("NÃ£o foi possÃ­vel capturar o preÃ§o ou o estado do estoque.");
         }
     }
 }
