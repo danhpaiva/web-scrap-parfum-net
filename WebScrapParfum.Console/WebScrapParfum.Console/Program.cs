@@ -87,6 +87,7 @@ static IScraper GetScraper(string url)
     if (host.Contains("natura.com.br"))            return new NaturaScraper();
     if (host.Contains("avatim.com.br"))            return new AvatimScraper();
     if (host.Contains("amazon.com.br"))            return new AmazonScraper();
+    if (host.Contains("zara.com"))                 return new ZaraScraper();
 
     throw new NotSupportedException($"Domínio não suportado: {host}");
 }
