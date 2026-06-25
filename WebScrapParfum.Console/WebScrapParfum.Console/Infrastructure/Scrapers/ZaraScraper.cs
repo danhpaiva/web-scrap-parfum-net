@@ -1,8 +1,9 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using WebScrapParfum.Models;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class ZaraScraper : ScraperBase
 {
@@ -15,7 +16,6 @@ public class ZaraScraper : ScraperBase
 
         try
         {
-            // Zara carrega o preço via React — aguarda qualquer seletor de preço visível
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
@@ -31,7 +31,6 @@ public class ZaraScraper : ScraperBase
         }
         catch (WebDriverTimeoutException)
         {
-            // Produto pode estar indisponível ou fora de estoque
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
                             _driver.PageSource.Contains("Avise-me") ||
                             _driver.PageSource.Contains("out-of-stock");

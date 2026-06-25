@@ -1,8 +1,9 @@
 using OpenQA.Selenium;
 using System.Globalization;
-using WebScrapParfum.Models;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class InTheBoxScraper : ScraperBase
 {

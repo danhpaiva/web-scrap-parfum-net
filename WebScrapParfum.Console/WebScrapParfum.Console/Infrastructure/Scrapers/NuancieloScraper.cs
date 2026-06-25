@@ -1,7 +1,8 @@
 using OpenQA.Selenium;
-using WebScrapParfum.Models;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class NuancieloScraper : ScraperBase
 {
@@ -12,7 +13,7 @@ public class NuancieloScraper : ScraperBase
     {
         _driver.Navigate().GoToUrl(config.Url);
 
-        ((OpenQA.Selenium.IJavaScriptExecutor)_driver).ExecuteScript("window.scrollTo(0, 500);");
+        ((IJavaScriptExecutor)_driver).ExecuteScript("window.scrollTo(0, 500);");
 
         var element = _wait.Until(d =>
         {

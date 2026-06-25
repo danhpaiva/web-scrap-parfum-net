@@ -3,10 +3,11 @@ using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 using System.Globalization;
 using System.Text.RegularExpressions;
-using WebScrapParfum.Interface;
-using WebScrapParfum.Models;
+using WebScrapParfum.Application.Interfaces;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public abstract class ScraperBase : IScraper
 {

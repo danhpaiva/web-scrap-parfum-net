@@ -1,8 +1,9 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using WebScrapParfum.Models;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class MercadoLivreScraper : ScraperBase
 {
@@ -26,7 +27,6 @@ public class MercadoLivreScraper : ScraperBase
                 return candidates.FirstOrDefault(e => e.Displayed && !string.IsNullOrWhiteSpace(e.Text));
             });
 
-            // O ML separa reais e centavos em elementos distintos — monta o valor completo
             var fraction = element.Text.Trim();
             var cents = _driver
                 .FindElements(By.CssSelector(".andes-money-amount__cents"))

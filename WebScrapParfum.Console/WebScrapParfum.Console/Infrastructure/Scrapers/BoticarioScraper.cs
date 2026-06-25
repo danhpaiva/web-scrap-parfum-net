@@ -1,13 +1,14 @@
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using WebScrapParfum.Models;
+using WebScrapParfum.Domain.Entities;
+using WebScrapParfum.Domain.ValueObjects;
 
-namespace WebScrapParfum.Services;
+namespace WebScrapParfum.Infrastructure.Scrapers;
 
-public class TheraScraper : ScraperBase
+public class BoticarioScraper : ScraperBase
 {
-    public TheraScraper()
-        : base(CreateBaseOptions(), TimeSpan.FromSeconds(10)) { }
+    public BoticarioScraper()
+        : base(CreateBaseOptions(disableBlinkAutomation: true, excludeEnableAutomation: true), TimeSpan.FromSeconds(15)) { }
 
     public override ScrapedResult Monitorar(PerfumeConfig config)
     {
@@ -18,11 +19,11 @@ public class TheraScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
-                    "[class*='price'], " +
-                    "[class*='preco'], " +
-                    "[data-testid='price'], " +
-                    ".product-price, " +
-                    ".price-box"));
+                    "[class*='price__value'], " +
+                    "[class*='sales-price'], " +
+                    "[data-testid='product-price'], " +
+                    ".product__price, " +
+                    "[class*='product-price']"));
 
                 return candidates.FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
             });
