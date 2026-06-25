@@ -89,6 +89,7 @@ static IScraper GetScraper(string url)
     if (host.Contains("amazon.com.br"))            return new AmazonScraper();
     if (host.Contains("zara.com"))                 return new ZaraScraper();
     if (host.Contains("theracosmeticos.com.br"))   return new TheraScraper();
+    if (host.Contains("boticario.com.br"))         return new BoticarioScraper();
 
     throw new NotSupportedException($"Domínio não suportado: {host}");
 }
