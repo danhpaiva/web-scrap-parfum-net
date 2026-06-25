@@ -1,17 +1,18 @@
-﻿using WebScrapParfum.Infrastructure.Factories;
+using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
+using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
 public class MercadoLivreScraper : ScraperBase
 {
-    public MercadoLivreScraper()
-        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(20)) { }
+    public MercadoLivreScraper(ILogger<MercadoLivreScraper> logger)
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(20), logger) { }
 
-    public override ScrapedResult Monitorar(PerfumeConfig config)
+    protected override ScrapedResult Execute(PerfumeConfig config)
     {
         _driver.Navigate().GoToUrl(config.Url);
 
@@ -39,7 +40,7 @@ public class MercadoLivreScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Sem estoque") ||
-                            _driver.PageSource.Contains("Produto indisponÃ­vel");
+                            _driver.PageSource.Contains("Produto indisponível");
 
             return new ScrapedResult(config, 0, !esgotado);
         }
