@@ -25,22 +25,42 @@ public abstract class ScraperBase : IScraper
         _wait = new WebDriverWait(_driver, waitTimeout);
     }
 
+    private const int MaxTentativas = 3;
+    private static readonly TimeSpan AtrasoEntreRetries = TimeSpan.FromSeconds(5);
+
     public ScrapedResult Monitorar(PerfumeConfig config)
     {
         _logger.LogInformation("Iniciando scraping: {Nome}", config.Nome);
         var sw = Stopwatch.StartNew();
 
+        for (int tentativa = 1; tentativa <= MaxTentativas; tentativa++)
+        {
+            try
+            {
+                var result = Execute(config);
+                sw.Stop();
+                _logger.LogInformation("Concluído: {Nome} em {Elapsed}ms", config.Nome, sw.ElapsedMilliseconds);
+                return result;
+            }
+            catch (Exception ex) when (tentativa < MaxTentativas)
+            {
+                _logger.LogWarning(
+                    "Tentativa {Tentativa}/{Max} falhou para {Nome}: {Mensagem}. Aguardando {Delay}s...",
+                    tentativa, MaxTentativas, config.Nome, ex.Message, AtrasoEntreRetries.TotalSeconds);
+
+                Thread.Sleep(AtrasoEntreRetries);
+            }
+        }
+
+        // Última tentativa — deixa a exceção propagar
         try
         {
-            var result = Execute(config);
-            sw.Stop();
-            _logger.LogInformation("Concluído: {Nome} em {Elapsed}ms", config.Nome, sw.ElapsedMilliseconds);
-            return result;
+            return Execute(config);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             sw.Stop();
-            _logger.LogError(ex, "Erro ao processar {Nome} após {Elapsed}ms", config.Nome, sw.ElapsedMilliseconds);
+            _logger.LogWarning("Falhou após {Max} tentativas: {Nome} ({Elapsed}ms)", MaxTentativas, config.Nome, sw.ElapsedMilliseconds);
             throw;
         }
     }

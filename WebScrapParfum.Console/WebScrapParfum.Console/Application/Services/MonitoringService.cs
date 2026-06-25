@@ -45,7 +45,7 @@ public class MonitoringService
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Falha ao processar {Nome}", item.Perfume.Nome);
+                _logger.LogError("Falha ao processar {Nome}: {Mensagem}", item.Perfume.Nome, ex.Message);
                 resultados.Add((item.Ordem, item.Perfume, null, ex.Message));
             }
         });
