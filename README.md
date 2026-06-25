@@ -4,8 +4,9 @@
 ![C#](https://img.shields.io/badge/C%23-239120?style=for-the-badge&logo=csharp&logoColor=white)
 ![Selenium](https://img.shields.io/badge/Selenium-43B02A?style=for-the-badge&logo=selenium&logoColor=white)
 ![Chrome](https://img.shields.io/badge/Google_Chrome-4285F4?style=for-the-badge&logo=googlechrome&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
 
-Aplicação Console desenvolvida em **.NET 10** para monitoramento automatizado de preços de perfumes. O projeto utiliza **Selenium WebDriver** para realizar o scraping de múltiplas lojas, comparando valores atuais com preços base e identificando promoções em tempo real.
+Aplicação Console desenvolvida em **.NET 10** para monitoramento automatizado de preços de perfumes. O projeto utiliza **Selenium WebDriver** para realizar o scraping de múltiplas lojas, comparando valores atuais com preços base e identificando promoções em tempo real. Os resultados são exibidos no console e exportados automaticamente para um arquivo `.txt` na área de trabalho.
 
 ---
 
@@ -14,10 +15,10 @@ Aplicação Console desenvolvida em **.NET 10** para monitoramento automatizado 
 - **.NET 10 (Console Application)**
 - **C#**
 - **Selenium WebDriver**
-- **Chrome Headless Mode** (Execução em segundo plano)
-- **System.Text.Json** (Manipulação de configurações)
-- **Design Pattern: Strategy** (Estratégias de busca por site)
-- **Design Pattern: Factory** (Criação dinâmica de Scrapers)
+- **Chrome / Edge / Firefox Headless Mode** (fallback automático entre navegadores)
+- **System.Text.Json** (leitura de configurações)
+- **Processamento Paralelo** (`Parallel.ForEach` com grau máximo 3)
+- **Docker** (containerização pronta para produção)
 
 ---
 
@@ -27,47 +28,131 @@ Aplicação Console desenvolvida em **.NET 10** para monitoramento automatizado 
 
 ---
 
-## 🛠️ Arquitetura e Patterns
+## 🏗️ Arquitetura
 
-O projeto foi estruturado para ser resiliente e facilmente expansível:
+O projeto segue os princípios de **Clean Architecture**, com responsabilidades separadas em camadas independentes:
 
-- **IScraper:** Interface que padroniza o comportamento de todos os scrapers.
-- **Scraper Factory:** Método centralizado para instanciar o motor de busca correto baseado no domínio da URL.
-- **Resiliência:** Tratamento de erros para produtos esgotados, detecção de AJAX e camuflagem de automação para evitar bloqueios.
+```
+WebScrapParfum.Console/
+├── Domain/
+│   ├── Entities/          # PerfumeConfig
+│   └── ValueObjects/      # ScrapedResult (desconto calculado automaticamente)
+│
+├── Application/
+│   ├── Interfaces/        # IScraper, IScraperFactory, IPerfumeRepository, INotifier
+│   └── Services/          # MonitoringService (orquestra o loop de monitoramento)
+│
+├── Infrastructure/
+│   ├── Factories/         # ScraperFactory, WebDriverFactory, DriverSettings
+│   ├── Repositories/      # JsonPerfumeRepository
+│   └── Scrapers/          # ScraperBase + um scraper por loja
+│
+├── Presentation/
+│   └── Notifiers/         # ConsoleNotifier, FileNotifier, CompositeNotifier
+│
+└── Program.cs             # Composição das dependências (wiring)
+```
+
+### Design Patterns aplicados
+
+| Pattern | Onde |
+|---|---|
+| **Strategy** | Cada loja tem seu próprio scraper com estratégia de extração independente |
+| **Factory** | `ScraperFactory` instancia o scraper correto pelo domínio da URL |
+| **Composite** | `CompositeNotifier` delega para múltiplos notifiers simultaneamente |
+| **Template Method** | `ScraperBase` define o ciclo de vida; subclasses implementam apenas `Monitorar()` |
+
+---
+
+## 🌐 Seleção de Navegador
+
+O `WebDriverFactory` tenta os navegadores na seguinte ordem, usando o primeiro disponível na máquina:
+
+1. **Google Chrome**
+2. **Microsoft Edge** (Chromium — mesmas opções do Chrome)
+3. **Mozilla Firefox** (com mapeamento de preferências equivalentes)
+
+Nenhuma configuração manual é necessária — a detecção é automática.
 
 ---
 
 ## 🛒 Lojas Suportadas
 
-Atualmente configurado para:
-
-1.  **Granado / Phebo**
-2.  **Nuancielo**
-3.  **In The Box**
-4.  **Natura**
-5.  **Avatim**
-6.  **Amazon**
+| # | Loja | Domínio |
+|---|---|---|
+| 1 | Granado / Phebo | `granado.com.br` |
+| 2 | Nuancielo | `nuancielo.com.br` |
+| 3 | In The Box | `intheboxperfumes.com.br` |
+| 4 | Natura | `natura.com.br` |
+| 5 | Avatim | `avatim.com.br` |
+| 6 | Amazon | `amazon.com.br` |
+| 7 | Zara | `zara.com` |
+| 8 | O Boticário | `boticario.com.br` |
+| 9 | Thera Cosméticos | `theracosmeticos.com.br` |
+| 10 | Mahogany | `mahogany.com.br` |
+| 11 | Maison Viegas | `maisonviegas.com.br` |
+| 12 | Mercado Livre | `mercadolivre.com.br` |
 
 ---
 
-## ⚙️ Configuração (perfumes.json)
+## ⚙️ Configuração (`perfumes.json`)
 
-Gerencie os itens monitorados através do arquivo JSON na raiz do projeto:
+Gerencie os itens monitorados através do arquivo `perfumes.json` na raiz do projeto publicado. Adicione quantos produtos quiser — cada entrada requer nome, URL do produto e preço base de referência:
 
 ```json
 [
   {
     "Nome": "Bossa - Eau de Toilette 100ml",
-    "Url": "[https://www.granado.com.br/perfume-bossa-100ml/p](https://www.granado.com.br/perfume-bossa-100ml/p)",
-    "PrecoBase": 230.00
+    "Url": "https://www.granado.com.br/granado/eau-de-toilette-bossa-100ml",
+    "PrecoBase": 195.00
   },
   {
-    "Nome": "Stant Acquae - In The Box",
-    "Url": "[https://www.intheboxperfumes.com.br/produto/stant-aquae-100ml-130](https://www.intheboxperfumes.com.br/produto/stant-aquae-100ml-130)",
-    "PrecoBase": 169.90
+    "Nome": "Infinite Horizon - In The Box 100ml",
+    "Url": "https://www.intheboxperfumes.com.br/produto/infinite-horizon-100ml-241",
+    "PrecoBase": 189.90
   }
 ]
 ```
+
+> O campo `PrecoBase` define o valor de referência. Quando o preço atual for inferior a ele, o sistema identifica e destaca a promoção.
+
+---
+
+## 📤 Saída dos Resultados
+
+Os resultados são entregues simultaneamente em dois destinos via `CompositeNotifier`:
+
+- **Console** — saída colorida em tempo real (verde = promoção, magenta = esgotado, amarelo = erro)
+- **Arquivo `.txt`** — salvo automaticamente na área de trabalho com o nome `lista_perfumes_YYYY-MM-DD.txt`
+
+Para adicionar um novo destino (ex: Telegram, e-mail), basta implementar `INotifier` e incluí-lo no `CompositeNotifier` em `Program.cs`.
+
+---
+
+## 🐳 Docker
+
+O projeto inclui um `Dockerfile` com build multi-stage otimizado para produção:
+
+```bash
+# Build da imagem
+docker build -t web-scrap-parfum .
+
+# Execução
+docker run --rm web-scrap-parfum
+```
+
+---
+
+## ➕ Adicionando uma Nova Loja
+
+1. Crie `Infrastructure/Scrapers/NomeDaLojaScraper.cs` herdando de `ScraperBase`
+2. Implemente o método `Monitorar(PerfumeConfig config)`
+3. Registre o domínio em `Infrastructure/Factories/ScraperFactory.cs`
+4. Adicione os produtos desejados no `perfumes.json`
+
+Nenhuma outra camada precisa ser alterada.
+
+---
 
 ## 📄 Licença
 
