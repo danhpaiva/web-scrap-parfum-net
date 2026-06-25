@@ -5,6 +5,11 @@
     "PrecoBase": 195.00
   },
   {
+    "Nome": "Wild - Nuancielo",
+    "Url": "https://www.nuancielo.com.br/wild",
+    "PrecoBase": 169.90
+  },
+  {
     "Nome": "CARIBBEAN - Nuancielo",
     "Url": "https://www.nuancielo.com.br/caribbean",
     "PrecoBase": 174.90
@@ -13,6 +18,11 @@
     "Nome": "Stant Acquae In The Box",
     "Url": "https://www.intheboxperfumes.com.br/produto/stant-aquae-100ml-130",
     "PrecoBase": 169.90
+  },
+  {
+    "Nome": "Deo Colônia Sr. N Masculino 100ml - Natura",
+    "Url": "https://www.natura.com.br/p/desodorante-colonia-sr-n-masculino-100-ml/NATBRA-30410",
+    "PrecoBase": 164.90
   },
   {
     "Nome": "Conexão de Humor - Natura",
@@ -48,5 +58,50 @@
     "Nome": "Phebo Deo Colônia, Coco da Bahia, 200ml",
     "Url": "https://www.amazon.com.br/Phebo-Col%C3%B4nia-Coco-Bahia-200ml/dp/B0DKK3T4D4/",
     "PrecoBase": 98.00
+  },
+  {
+    "Nome": "For Men - Mahogany",
+    "Url": "https://www.mahogany.com.br/perfume-masculino-fragrancia-desodorante-corporal-for-men-mahogany/p",
+    "PrecoBase": 195.00
+  },
+  {
+    "Nome": "Body Splash Bambou Oriental 350ml - Mahogany",
+    "Url": "https://www.mahogany.com.br/banho-perfumado-bambou-oriental/p",
+    "PrecoBase": 117.00
+  },
+  {
+    "Nome": "Arbo Desodorante Colônia 100ml",
+    "Url": "https://www.boticario.com.br/arbo-desodorante-colonia-100ml-v4/",
+    "PrecoBase": 189.90
+  },
+  {
+    "Nome": "Revelation - Thera Cosméticos 50ml",
+    "Url": "https://www.theracosmeticos.com.br/produtos/perfume-masculino-revelation-6t8qe/",
+    "PrecoBase": 109.90
+  },
+  {
+    "Nome": "Infinite Horizon - In The Box 100ml",
+    "Url": "https://www.intheboxperfumes.com.br/produto/infinite-horizon-100ml-241",
+    "PrecoBase": 189.90
+  },
+  {
+    "Nome": "Vodka Wild - Paris Elysees 100ml",
+    "Url": "https://www.mercadolivre.com.br/paris-elysees-vodka-wild-100ml/p/MLB19905919",
+    "PrecoBase": 78.90
+  },
+  {
+    "Nome": "Vodka Brasil Yellow - Paris Elysees 100ml",
+    "Url": "https://www.mercadolivre.com.br/vodka-brasil-yellow-paris-elysees-edt-perfume-masculino-100ml/p/MLB18948403",
+    "PrecoBase": 78.90
+  },
+  {
+    "Nome": "Heaven - Maison Viegas 50ml",
+    "Url": "https://maisonviegas.com.br/produtos/heaven-inspirado-em-imagination-louis-vuitton/",
+    "PrecoBase": 129.00
+  },
+  {
+    "Nome": "Sunrise On The Red Sand Dunes EDP 100ml",
+    "Url": "https://www.zara.com/br/pt/sunrise-on-the-red-sand-dunes-edp-100ml---3-4-fl-oz---p20220240.html",
+    "PrecoBase": 179.00
   }
 ]

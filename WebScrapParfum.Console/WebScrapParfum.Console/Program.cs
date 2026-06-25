@@ -1,82 +1,28 @@
-﻿using System.Text.Json;
-using WebScrapParfum.Interface;
-using WebScrapParfum.Models;
-using WebScrapParfum.Services;
+using WebScrapParfum.Application.Services;
+using WebScrapParfum.Infrastructure.Factories;
+using WebScrapParfum.Infrastructure.Repositories;
+using WebScrapParfum.Presentation.Notifiers;
 
-var jsonPath = Path.Combine(AppContext.BaseDirectory, "perfumes.json");
+var jsonPath   = Path.Combine(AppContext.BaseDirectory, "perfumes.json");
+var desktop    = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+var outputFile = Path.Combine(desktop, $"lista_perfumes_{DateTime.Today:yyyy-MM-dd}.txt");
 
-if (!File.Exists(jsonPath))
+var repository = new JsonPerfumeRepository(jsonPath);
+var factory    = new ScraperFactory();
+
+using var fileNotifier = new FileNotifier(outputFile);
+var notifier = new CompositeNotifier(new ConsoleNotifier(), fileNotifier);
+
+var service = new MonitoringService(repository, factory, notifier);
+
+try
+{
+    service.Run();
+    Console.WriteLine($"[LOG] Resultado salvo em: {outputFile}");
+}
+catch (FileNotFoundException ex)
 {
     Console.ForegroundColor = ConsoleColor.Red;
-    Console.WriteLine($"Erro fatal: Arquivo de configuração não encontrado em: {jsonPath}");
+    Console.WriteLine($"Erro fatal: {ex.Message}");
     Console.ResetColor();
-    return;
-}
-
-var jsonContent = File.ReadAllText(jsonPath);
-var listaPerfumes = JsonSerializer.Deserialize<List<PerfumeConfig>>(jsonContent);
-
-if (listaPerfumes == null) return;
-
-foreach (var perfume in listaPerfumes)
-{
-    Console.WriteLine($"[LOG] Verificando: {perfume.Nome}...");
-
-    try
-    {
-        // Obtemos o scraper correto para o domínio atual
-        using IScraper scraper = GetScraper(perfume.Url);
-
-        var resultado = scraper.Monitorar(perfume);
-
-        if (!resultado.EstaDisponivel)
-        {
-            Console.ForegroundColor = ConsoleColor.Magenta;
-            Console.WriteLine($"[AVISO] {perfume.Nome}: Produto Esgotado no site.");
-            Console.ResetColor();
-        }
-        else
-        {
-            Console.WriteLine($"[LOG] Preço encontrado: {resultado.PrecoAtual:C} (Base: {perfume.PrecoBase:C})");
-
-            if (resultado.TemDesconto)
-            {
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine($"!!! PROMOÇÃO DETECTADA !!!");
-                Console.WriteLine($"Perfume: {resultado.Info.Nome}");
-                Console.WriteLine($"Desconto de: {resultado.ValorDesconto:C}");
-                Console.ResetColor();
-            }
-            else
-            {
-                Console.WriteLine($"[INFO] Sem desconto relevante para {perfume.Nome}.");
-            }
-        }
-    }
-    catch (Exception ex)
-    {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine($"[AVISO] Não foi possível processar {perfume.Nome}: {ex.Message}");
-        Console.ResetColor();
-    }
-
-    Console.WriteLine(new string('-', 30));
-}
-
-// Fábrica (Factory Method) para decidir qual estratégia de scraping usar
-static IScraper GetScraper(string url)
-{
-    if (url.Contains("granado.com.br")) return new GranadoScraper();
-
-    if (url.Contains("nuancielo.com.br")) return new NuancieloScraper();
-
-    if (url.Contains("intheboxperfumes.com.br")) return new InTheBoxScraper();
-
-    if (url.Contains("natura.com.br")) return new NaturaScraper();
-
-    if (url.Contains("avatim.com.br")) return new AvatimScraper();
-
-    if (url.Contains("amazon.com.br")) return new AmazonScraper();
-
-    throw new Exception("Domínio não suportado pelo sistema de scraping.");
 }
