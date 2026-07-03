@@ -108,5 +108,20 @@
     "Nome": "Vibrant Leather EDP 100ml",
     "Url": "https://www.zara.com/br/pt/vibrant-leather-edp-100ml--3-38-fl-oz--p20210721.html",
     "PrecoBase": 179.00
+  },
+  {
+    "Nome": "Deo Parfum Masculino Essencial Sentir 100ml - Natura",
+    "Url": "https://www.natura.com.br/p/deo-parfum-essencial-sentir-masculino-100-ml/NATBRA-167755",
+    "PrecoBase": 279.90
+  },
+  {
+    "Nome": "Deo Parfum Seleto 100ml",
+    "Url": "https://www.avatim.com.br/produto/deo-parfum-seleto-100ml-56",
+    "PrecoBase": 165.00
+  },
+  {
+    "Nome": "Deo Parfum Seleto Ocean 100ml",
+    "Url": "https://www.avatim.com.br/produto/deo-parfum-seleto-ocean-100ml-57",
+    "PrecoBase": 165.00
   }
 ]
