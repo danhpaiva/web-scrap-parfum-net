@@ -43,7 +43,6 @@ public class EudoraScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
-                            _driver.PageSource.Contains("Indisponível") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);
