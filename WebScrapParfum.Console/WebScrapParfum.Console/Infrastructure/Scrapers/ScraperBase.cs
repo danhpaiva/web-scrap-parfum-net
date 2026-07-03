@@ -70,7 +70,7 @@ public abstract class ScraperBase : IScraper
     protected static decimal ParsePrice(string text)
     {
         string clean = text.Replace(" ", " ").Replace("\r", "").Replace("\n", "").Trim();
-        var match = Regex.Match(clean, @"\d+,\d{2}");
+        var match = Regex.Match(clean, @"\d{1,3}(?:\.\d{3})*,\d{2}");
 
         if (match.Success)
             return decimal.Parse(match.Value, new CultureInfo("pt-BR"));
