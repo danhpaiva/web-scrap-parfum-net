@@ -92,6 +92,9 @@ Nenhuma configuração manual é necessária — a detecção é automática.
 | 10 | Mahogany | `mahogany.com.br` |
 | 11 | Maison Viegas | `maisonviegas.com.br` |
 | 12 | Mercado Livre | `mercadolivre.com.br` |
+| 13 | Wepink | `wepink.com.br` |
+| 14 | Eudora | `eudora.com.br` |
+| 15 | Perfumistta | `perfumistta.com.br` |
 
 ---
 
@@ -151,6 +154,24 @@ docker run --rm web-scrap-parfum
 4. Adicione os produtos desejados no `perfumes.json`
 
 Nenhuma outra camada precisa ser alterada.
+
+---
+
+## ✅ Testes
+
+O projeto `WebScrapParfum.Tests` (xUnit) cobre a camada de aplicação e domínio sem depender de Selenium/navegador real:
+
+- **`ParsePrice`** (via reflection) — extração de preço em diversos formatos, incluindo separador de milhar
+- **`ScrapedResult`** — cálculo de `TemDesconto` / `ValorDesconto`
+- **`ScraperFactory`** — resolução de scraper por domínio e tratamento de URLs inválidas/não suportadas
+- **`JsonPerfumeRepository`** — leitura de configuração a partir do `perfumes.json`
+- **`MonitoringService`** — orquestração do monitoramento com fakes, validando ordem dos resultados e resiliência a falhas de scraper
+
+Para rodar os testes:
+
+```bash
+dotnet test WebScrapParfum.Console/WebScrapParfum.Tests
+```
 
 ---
 
