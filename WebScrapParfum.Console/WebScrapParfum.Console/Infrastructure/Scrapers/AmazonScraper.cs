@@ -17,9 +17,10 @@ public class AmazonScraper : ScraperBase
 
         try
         {
-            var disponivel = _driver.FindElements(By.Id("add-to-cart-button")).Any(e => e.Displayed);
-            if (!disponivel) return new ScrapedResult(config, 0, false);
-
+            // A disponibilidade é derivada da presença de um preço de compra
+            // (priceToPay). Checar #add-to-cart-button diretamente era frágil:
+            // o botão carrega tarde ou muda conforme o buybox, gerando falso
+            // "Esgotado" mesmo com o produto à venda.
             _wait.Until(d =>
                 d.FindElements(By.CssSelector(
                     "#corePrice_desktop .priceToPay span.a-offscreen, " +
@@ -43,7 +44,8 @@ public class AmazonScraper : ScraperBase
             {
                 var fallbackText = _driver.FindElement(By.CssSelector(".a-price .a-offscreen"))
                                           .GetAttribute("innerText") ?? string.Empty;
-                return new ScrapedResult(config, ParsePrice(fallbackText), true);
+                var preco = ParsePrice(fallbackText);
+                return new ScrapedResult(config, preco, preco > 0);
             }
             catch
             {

@@ -18,20 +18,22 @@ public class NaturaScraper : ScraperBase
 
         try
         {
+            // Espera pelo preço canônico do produto. O fallback só é usado se
+            // #product-price nunca aparecer, evitando corrida onde o seletor
+            // genérico captura um preço secundário (ex.: assinatura).
             var element = _wait.Until(d =>
-            {
-                var principal = d.FindElements(By.CssSelector("#product-price"))
-                                  .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
-                if (principal is not null) return principal;
-
-                return d.FindElements(By.CssSelector("[data-testid='price-value']"))
-                         .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
-            });
+                d.FindElements(By.CssSelector("#product-price"))
+                 .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$")));
 
             return new ScrapedResult(config, ParsePrice(element.Text), true);
         }
         catch (WebDriverTimeoutException)
         {
+            var fallback = _driver.FindElements(By.CssSelector("[data-testid='price-value']"))
+                                  .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+            if (fallback is not null)
+                return new ScrapedResult(config, ParsePrice(fallback.Text), true);
+
             bool esgotado = _driver.PageSource.Contains("Produto indisponível") ||
                             _driver.PageSource.Contains("Avise-me");
 
