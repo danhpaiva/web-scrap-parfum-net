@@ -21,6 +21,7 @@ public class WepinkScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
+                    ".vtex-product-price-1-x-sellingPrice, " +
                     ".vtex-store-components-3-x-sellingPrice, " +
                     "[class*='sellingPrice'], " +
                     "[class*='price__selling'], " +

@@ -21,6 +21,7 @@ public class PerfumisttaScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
+                    "sale-price, " +
                     ".price-item--sale, " +
                     ".price-item--regular, " +
                     ".price__regular .price-item, " +

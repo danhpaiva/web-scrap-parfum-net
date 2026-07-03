@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System.Globalization;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
 using WebScrapParfum.Infrastructure.Factories;
@@ -21,6 +22,7 @@ public class EudoraScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
+                    "[class*='nproduct-price-value'], " +
                     "[data-testid='price-value'], " +
                     "[class*='sellingPrice'], " +
                     "[class*='price__value'], " +
@@ -28,10 +30,15 @@ public class EudoraScraper : ScraperBase
                     "[class*='product-price'], " +
                     ".product__price"));
 
-                return candidates.FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+                return candidates.FirstOrDefault(e => e.Displayed && (e.GetAttribute("content") != null || e.Text.Contains("R$")));
             });
 
-            return new ScrapedResult(config, ParsePrice(element.Text), true);
+            var content = element.GetAttribute("content");
+            decimal preco = !string.IsNullOrEmpty(content)
+                ? decimal.Parse(content, CultureInfo.InvariantCulture)
+                : ParsePrice(element.Text);
+
+            return new ScrapedResult(config, preco, true);
         }
         catch (WebDriverTimeoutException)
         {
