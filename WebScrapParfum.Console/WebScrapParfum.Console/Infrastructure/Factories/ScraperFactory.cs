@@ -29,6 +29,7 @@ public class ScraperFactory : IScraperFactory
         if (host.Contains("mahogany.com.br"))          return new MahoganyScraper(_loggerFactory.CreateLogger<MahoganyScraper>());
         if (host.Contains("maisonviegas.com.br"))      return new MaisonViegasScraper(_loggerFactory.CreateLogger<MaisonViegasScraper>());
         if (host.Contains("mercadolivre.com.br"))      return new MercadoLivreScraper(_loggerFactory.CreateLogger<MercadoLivreScraper>());
+        if (host.Contains("wepink.com.br"))            return new WepinkScraper(_loggerFactory.CreateLogger<WepinkScraper>());
 
         throw new NotSupportedException($"Domínio não suportado: {host}");
     }

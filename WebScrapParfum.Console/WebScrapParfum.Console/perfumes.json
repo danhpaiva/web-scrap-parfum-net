@@ -35,11 +35,6 @@
     "PrecoBase": 145.00
   },
   {
-    "Nome": "Udv for Men",
-    "Url": "https://www.amazon.com.br/Udv-Edi%C3%A7%C3%A3o-Vap-Ulric-Varens/dp/B000GIJ1XS",
-    "PrecoBase": 109.00
-  },
-  {
     "Nome": "Nautica Voyage 100ml",
     "Url": "https://www.amazon.com.br/Nautica-Toilette-Spray-Voyage-homens/dp/B01I54ITP0",
     "PrecoBase": 107.00
@@ -103,5 +98,10 @@
     "Nome": "Sunrise On The Red Sand Dunes EDP 100ml",
     "Url": "https://www.zara.com/br/pt/sunrise-on-the-red-sand-dunes-edp-100ml---3-4-fl-oz---p20220240.html",
     "PrecoBase": 179.00
+  },
+  {
+    "Nome": "Heaven Blue Desodorante Colônia 100ml - Wepink",
+    "Url": "https://www.wepink.com.br/desod-col-heaven-blue-100ml---wepink-396/p",
+    "PrecoBase": 81.90
   }
 ]
