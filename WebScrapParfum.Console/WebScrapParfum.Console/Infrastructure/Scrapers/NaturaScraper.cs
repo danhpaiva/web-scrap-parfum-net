@@ -20,9 +20,12 @@ public class NaturaScraper : ScraperBase
         {
             var element = _wait.Until(d =>
             {
-                var el = d.FindElements(By.CssSelector("[data-testid='price-value'], #product-price"))
-                          .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
-                return el;
+                var principal = d.FindElements(By.CssSelector("#product-price"))
+                                  .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+                if (principal is not null) return principal;
+
+                return d.FindElements(By.CssSelector("[data-testid='price-value']"))
+                         .FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
             });
 
             return new ScrapedResult(config, ParsePrice(element.Text), true);
