@@ -42,3 +42,9 @@ catch (FileNotFoundException ex)
     Console.WriteLine($"Erro fatal: {ex.Message}");
     Console.ResetColor();
 }
+catch (Exception ex)
+{
+    Console.ForegroundColor = ConsoleColor.Red;
+    Console.WriteLine($"Erro inesperado: {ex.Message}");
+    Console.ResetColor();
+}
