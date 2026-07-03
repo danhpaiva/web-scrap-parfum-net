@@ -9,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class GranadoScraper : ScraperBase
 {
     public GranadoScraper(ILogger<GranadoScraper> logger)
-        : base(new DriverSettings(AddUserAgent: false), TimeSpan.FromSeconds(15), logger) { }
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15), logger) { }
 
     protected override ScrapedResult Execute(PerfumeConfig config)
     {
