@@ -1,3 +1,5 @@
 <Solution>
+  <Folder Name="/WebScrapParfum.Console/" />
   <Project Path="WebScrapParfum.Console/WebScrapParfum.csproj" />
+  <Project Path="WebScrapParfum.Tests/WebScrapParfum.Tests.csproj" />
 </Solution>

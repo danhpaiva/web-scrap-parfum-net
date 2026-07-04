@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
+using System.Globalization;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
 using WebScrapParfum.Infrastructure.Factories;
@@ -21,15 +22,22 @@ public class MaisonViegasScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
+                    "#price_display, " +
+                    "[data-product-price], " +
                     "[class*='price'], " +
                     "[class*='preco'], " +
                     ".product__price, " +
                     "[data-testid='price']"));
 
-                return candidates.FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
+                return candidates.FirstOrDefault(e => e.Displayed && (e.GetAttribute("content") != null || e.Text.Contains("R$")));
             });
 
-            return new ScrapedResult(config, ParsePrice(element.Text), true);
+            var content = element.GetAttribute("content");
+            decimal preco = !string.IsNullOrEmpty(content)
+                ? decimal.Parse(content, CultureInfo.InvariantCulture)
+                : ParsePrice(element.Text);
+
+            return new ScrapedResult(config, preco, true);
         }
         catch (WebDriverTimeoutException)
         {

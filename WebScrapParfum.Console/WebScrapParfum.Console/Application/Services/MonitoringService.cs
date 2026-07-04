@@ -59,9 +59,14 @@ public class MonitoringService
         foreach (var (_, perfume, resultado, erro) in ordenados)
         {
             if (erro is not null)
+            {
                 _notifier.NotifyError(perfume, erro);
+            }
             else
+            {
                 _notifier.NotifyResult(resultado!);
+                _repository.RegistrarLeitura(resultado!);
+            }
         }
 
         _logger.LogInformation(

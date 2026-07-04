@@ -8,10 +8,10 @@ using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
-public class BoticarioScraper : ScraperBase
+public class EudoraScraper : ScraperBase
 {
-    public BoticarioScraper(ILogger<BoticarioScraper> logger)
-        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15), logger) { }
+    public EudoraScraper(ILogger<EudoraScraper> logger)
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(20), logger) { }
 
     protected override ScrapedResult Execute(PerfumeConfig config)
     {
@@ -23,11 +23,12 @@ public class BoticarioScraper : ScraperBase
             {
                 var candidates = d.FindElements(By.CssSelector(
                     "[class*='nproduct-price-value'], " +
+                    "[data-testid='price-value'], " +
+                    "[class*='sellingPrice'], " +
                     "[class*='price__value'], " +
                     "[class*='sales-price'], " +
-                    "[data-testid='product-price'], " +
-                    ".product__price, " +
-                    "[class*='product-price']"));
+                    "[class*='product-price'], " +
+                    ".product__price"));
 
                 return candidates.FirstOrDefault(e => e.Displayed && (e.GetAttribute("content") != null || e.Text.Contains("R$")));
             });
@@ -42,7 +43,6 @@ public class BoticarioScraper : ScraperBase
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
-                            _driver.PageSource.Contains("Indisponível") ||
                             _driver.PageSource.Contains("Avise-me");
 
             return new ScrapedResult(config, 0, !esgotado);

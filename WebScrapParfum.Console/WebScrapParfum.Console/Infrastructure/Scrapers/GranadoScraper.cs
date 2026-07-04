@@ -9,7 +9,7 @@ namespace WebScrapParfum.Infrastructure.Scrapers;
 public class GranadoScraper : ScraperBase
 {
     public GranadoScraper(ILogger<GranadoScraper> logger)
-        : base(new DriverSettings(AddUserAgent: false), TimeSpan.FromSeconds(5), logger) { }
+        : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15), logger) { }
 
     protected override ScrapedResult Execute(PerfumeConfig config)
     {
@@ -17,7 +17,7 @@ public class GranadoScraper : ScraperBase
 
         var element = _wait.Until(d =>
         {
-            var el = d.FindElement(By.XPath("//span[contains(., 'R$')]"));
+            var el = d.FindElement(By.XPath("//span[contains(@class, 'font-granado') and contains(@class, 'text-[32px]')]"));
             return el.Displayed ? el : null;
         });
 

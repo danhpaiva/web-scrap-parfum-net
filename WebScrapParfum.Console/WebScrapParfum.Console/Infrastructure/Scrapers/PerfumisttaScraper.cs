@@ -1,16 +1,15 @@
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Support.UI;
-using System.Globalization;
 using WebScrapParfum.Domain.Entities;
 using WebScrapParfum.Domain.ValueObjects;
 using WebScrapParfum.Infrastructure.Factories;
 
 namespace WebScrapParfum.Infrastructure.Scrapers;
 
-public class BoticarioScraper : ScraperBase
+public class PerfumisttaScraper : ScraperBase
 {
-    public BoticarioScraper(ILogger<BoticarioScraper> logger)
+    public PerfumisttaScraper(ILogger<PerfumisttaScraper> logger)
         : base(new DriverSettings(DisableBlinkAutomation: true, ExcludeEnableAutomation: true), TimeSpan.FromSeconds(15), logger) { }
 
     protected override ScrapedResult Execute(PerfumeConfig config)
@@ -22,28 +21,24 @@ public class BoticarioScraper : ScraperBase
             var element = _wait.Until(d =>
             {
                 var candidates = d.FindElements(By.CssSelector(
-                    "[class*='nproduct-price-value'], " +
-                    "[class*='price__value'], " +
-                    "[class*='sales-price'], " +
-                    "[data-testid='product-price'], " +
-                    ".product__price, " +
-                    "[class*='product-price']"));
+                    "sale-price, " +
+                    ".price-item--sale, " +
+                    ".price-item--regular, " +
+                    ".price__regular .price-item, " +
+                    ".price-item, " +
+                    "[class*='price']"));
 
-                return candidates.FirstOrDefault(e => e.Displayed && (e.GetAttribute("content") != null || e.Text.Contains("R$")));
+                return candidates.FirstOrDefault(e => e.Displayed && e.Text.Contains("R$"));
             });
 
-            var content = element.GetAttribute("content");
-            decimal preco = !string.IsNullOrEmpty(content)
-                ? decimal.Parse(content, CultureInfo.InvariantCulture)
-                : ParsePrice(element.Text);
-
-            return new ScrapedResult(config, preco, true);
+            return new ScrapedResult(config, ParsePrice(element.Text), true);
         }
         catch (WebDriverTimeoutException)
         {
             bool esgotado = _driver.PageSource.Contains("Esgotado") ||
                             _driver.PageSource.Contains("Indisponível") ||
-                            _driver.PageSource.Contains("Avise-me");
+                            _driver.PageSource.Contains("Sold out") ||
+                            _driver.PageSource.Contains("Vendido");
 
             return new ScrapedResult(config, 0, !esgotado);
         }
