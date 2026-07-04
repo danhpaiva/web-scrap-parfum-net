@@ -1,3 +1,4 @@
+using System.Globalization;
 using Microsoft.Extensions.Logging;
 using OpenQA.Selenium;
 using WebScrapParfum.Domain.Entities;
@@ -17,41 +18,65 @@ public class AmazonScraper : ScraperBase
 
         try
         {
-            // A disponibilidade é derivada da presença de um preço de compra
-            // (priceToPay). Checar #add-to-cart-button diretamente era frágil:
-            // o botão carrega tarde ou muda conforme o buybox, gerando falso
-            // "Esgotado" mesmo com o produto à venda.
-            _wait.Until(d =>
-                d.FindElements(By.CssSelector(
-                    "#corePrice_desktop .priceToPay span.a-offscreen, " +
-                    "#corePriceDisplay_desktop_feature_div .priceToPay span.a-offscreen"))
-                 .FirstOrDefault(e => !string.IsNullOrEmpty(e.GetAttribute("innerText"))));
+            _wait.Until(d => LerPreco(d) > 0 || Indisponivel(d));
 
-            var precos = _driver
-                .FindElements(By.CssSelector(".priceToPay .a-offscreen, .apexPriceToPay .a-offscreen"))
-                .Select(e => e.GetAttribute("innerText"))
-                .Where(t => !string.IsNullOrEmpty(t))
-                .Select(t => TryParsePrice(t!))
-                .Where(p => p > 0)
-                .ToList();
-
-            decimal menorPreco = precos.Any() ? precos.Min() : 0;
-            return new ScrapedResult(config, menorPreco, menorPreco > 0);
+            var preco = LerPreco(_driver);
+            return new ScrapedResult(config, preco, preco > 0);
         }
-        catch (Exception)
+        catch (WebDriverTimeoutException)
         {
-            try
-            {
-                var fallbackText = _driver.FindElement(By.CssSelector(".a-price .a-offscreen"))
-                                          .GetAttribute("innerText") ?? string.Empty;
-                var preco = ParsePrice(fallbackText);
-                return new ScrapedResult(config, preco, preco > 0);
-            }
-            catch
-            {
-                return new ScrapedResult(config, 0, false);
-            }
+            return new ScrapedResult(config, 0, false);
         }
+    }
+
+    // No layout atual da Amazon o <span class="a-offscreen"> do preço "a pagar"
+    // vem vazio; o valor vive no rótulo de acessibilidade ou nos spans
+    // whole/fraction (aria-hidden). Lê-se via textContent, pois innerText de
+    // elementos ocultos (a-offscreen) retorna vazio.
+    private static decimal LerPreco(ISearchContext ctx)
+    {
+        var rotulo = ctx.FindElements(By.CssSelector(
+                "#apex-pricetopay-accessibility-label, .apex-pricetopay-accessibility-label"))
+            .Select(TextoDe)
+            .FirstOrDefault(t => t.Contains("R$"));
+        if (rotulo is not null && TryParsePrice(rotulo) is var pr && pr > 0)
+            return pr;
+
+        var inteira = ctx.FindElements(By.CssSelector(".priceToPay .a-price-whole")).Select(TextoDe).FirstOrDefault();
+        var centavos = ctx.FindElements(By.CssSelector(".priceToPay .a-price-fraction")).Select(TextoDe).FirstOrDefault();
+        var composto = ComporPreco(inteira, centavos);
+        if (composto > 0) return composto;
+
+        var offscreen = ctx.FindElements(By.CssSelector(".priceToPay .a-offscreen, .apexPriceToPay .a-offscreen"))
+            .Select(TextoDe)
+            .FirstOrDefault(t => t.Contains("R$"));
+        if (offscreen is not null && TryParsePrice(offscreen) is var po && po > 0)
+            return po;
+
+        return 0;
+    }
+
+    private static decimal ComporPreco(string? inteira, string? centavos)
+    {
+        if (string.IsNullOrWhiteSpace(inteira) || string.IsNullOrWhiteSpace(centavos))
+            return 0;
+
+        var digInteira = new string(inteira.Where(char.IsDigit).ToArray());
+        var digCentavos = new string(centavos.Where(char.IsDigit).ToArray());
+        if (digInteira.Length == 0 || digCentavos.Length == 0)
+            return 0;
+
+        return decimal.TryParse($"{digInteira}.{digCentavos}",
+            NumberStyles.Number, CultureInfo.InvariantCulture, out var preco) ? preco : 0;
+    }
+
+    private static bool Indisponivel(ISearchContext ctx)
+        => ctx.FindElements(By.Id("outOfStock")).Count > 0;
+
+    private static string TextoDe(IWebElement e)
+    {
+        try { return e.GetAttribute("textContent")?.Trim() ?? string.Empty; }
+        catch (StaleElementReferenceException) { return string.Empty; }
     }
 
     private static decimal TryParsePrice(string text)

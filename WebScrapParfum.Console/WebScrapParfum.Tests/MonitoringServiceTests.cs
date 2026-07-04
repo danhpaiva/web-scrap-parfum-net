@@ -10,7 +10,10 @@ public class MonitoringServiceTests
 {
     private sealed class FakeRepository(IReadOnlyList<PerfumeConfig> perfumes) : IPerfumeRepository
     {
+        public List<ScrapedResult> LeiturasRegistradas { get; } = [];
+
         public IReadOnlyList<PerfumeConfig> GetAll() => perfumes;
+        public void RegistrarLeitura(ScrapedResult resultado) => LeiturasRegistradas.Add(resultado);
     }
 
     private sealed class FakeScraper(Func<PerfumeConfig, ScrapedResult> monitorar) : IScraper

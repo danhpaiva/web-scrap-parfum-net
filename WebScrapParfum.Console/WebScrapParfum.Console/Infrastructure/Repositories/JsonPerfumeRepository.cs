@@ -1,10 +1,12 @@
 using System.Text.Json;
-using WebScrapParfum.Application.Interfaces;
 using WebScrapParfum.Domain.Entities;
 
 namespace WebScrapParfum.Infrastructure.Repositories;
 
-public class JsonPerfumeRepository : IPerfumeRepository
+// Carregador da lista de seed. A lista viva (perfumes + histórico) é mantida
+// no SQLite via SqlitePerfumeRepository; este tipo só lê o perfumes.json usado
+// para semear o banco na primeira execução.
+public class JsonPerfumeRepository
 {
     private readonly string _jsonPath;
 
